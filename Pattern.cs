@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 
 namespace Sequencer.Utils;
 
@@ -8,14 +7,11 @@ public sealed class Pattern
 {
     private readonly List<string> flow = [];
 
-    private readonly int fileCount = 0;
-    private readonly int delayCount = 0;
-
-    public Pattern(string line) => flow = ExctractFlow(line, out fileCount, out delayCount);
+    public Pattern(string line) => flow = ExctractFlow(line);
 
     public static string InsertInFlow(string flow, string[] fileNames)
     {
-        List<string> entries = ExctractFlow(flow, out _, out _); 
+        List<string> entries = ExctractFlow(flow); 
 
         for (int i = 0; i < entries.Count; i++)
         {
@@ -43,22 +39,11 @@ public sealed class Pattern
         return output;
     }
 
-    private static List<string> ExctractFlow(string line, out int fileCount, out int delayCount)
+    private static List<string> ExctractFlow(string line)
     {
         List<string> flow = [];
 
-        fileCount = 0;
-        delayCount = 0;
-
-        foreach (var entry in line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
-        {
-            if (int.TryParse(entry, out _))
-                delayCount++;
-            else
-                fileCount++;
-
-            flow.Add(entry);
-        }
+        flow.AddRange(line.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
 
         return flow;
     }
@@ -74,7 +59,4 @@ public sealed class Pattern
         
         return output;
     }
-
-    public int GetFileCount() => fileCount;
-    public int GetDelayCount() => delayCount;
 }
