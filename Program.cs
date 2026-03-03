@@ -2,18 +2,36 @@
 using System.IO;
 using Sequencer.Utils;
 
+using static Sequencer.Utils.EConfigOption;
+
 namespace Sequencer;
 
 public static class Program
 {
     public static void Main()
     {
-        Config whiteList = new ("white_list");
-        Config patternList = new ("patterns");
+        Config whiteList = new (LinkManager.WhiteListFileName);
+        Config patternList = new (PatternManager.PatternFileName);
+        Config config = new (ConfigManager.ConfigFileName);
 
-        LinkManager.Initialize(whiteList.Read());
-        PatternManager.Initialize(patternList.Read());
+        LinkManager.Init(whiteList.Read());
 
+        Exception? result = PatternManager.Init(patternList.Read());
+        if (result != null)
+        {
+            PrintWarning($"{result.Message}");
+
+            return;
+        }
+
+        ConfigManager.Init(config.Read());
+
+        string separatorSymbol = ConfigManager.ResolveName(SeparatorSymbol);
+        string exitPhrase = ConfigManager.ResolveName(ExitPhrase);
+
+        bool showExtensions = ConfigManager.ResolveName(ShowExtension).Contains("true");
+        bool autoClose = ConfigManager.ResolveName(AutoClose).Contains("true");
+        
         string[] fileNames = LinkManager.Scan();
 
         if (fileNames.Length < 1)
@@ -28,13 +46,13 @@ public static class Program
             Console.Clear();
 
             for (int i = 0; i < fileNames.Length; i++)
-                Console.WriteLine($"{i + 1}) {fileNames[i]}");
+                Console.WriteLine($"{i + 1}) {(showExtensions ? fileNames[i] : Path.GetFileNameWithoutExtension(fileNames[i]))}");
 
             string? userInput = Console.ReadLine();
 
             if (userInput != null)
             {
-                if (userInput.Equals("exit"))
+                if (userInput.Equals(exitPhrase))
                 {
                     Console.Clear();
 
@@ -43,19 +61,35 @@ public static class Program
                 else if (int.TryParse(userInput, out int index))
                 {
                     if (index - 1 < fileNames.Length && index - 1 >= 0)
+                    {
                         Processor.TryRun(fileNames[index - 1]);
+
+                        if (autoClose)
+                        {
+                            Console.Clear();
+
+                            return;
+                        }
+                    }
                     else
                         PrintWarning($"'{userInput}' is not correct index!");
                 }
-                else if (userInput.Contains(','))
+                else if (userInput.Contains(separatorSymbol))
                 {
                     string flow = Pattern.InsertInFlow(userInput, fileNames);
 
                     Pattern pattern = new (flow);
-                    var result = Processor.TryRun(pattern, fileNames);
+                    result = Processor.TryRun(pattern);
 
                     if (result != null)
                         PrintWarning(result.Message);
+                    else
+                        if (autoClose)
+                        {
+                            Console.Clear();
+
+                            return;
+                        }
                 }
                 else
                 {
@@ -63,10 +97,17 @@ public static class Program
 
                     if (pattern != null)
                     {
-                        var result = Processor.TryRun(pattern, fileNames);
+                        result = Processor.TryRun(pattern);
 
                         if (result != null)
                             PrintWarning(result.Message);
+                        else
+                            if (autoClose)
+                            {
+                                Console.Clear();
+
+                                return;
+                            }
                     }
                     else
                         PrintWarning($"'{userInput}' pattern doesn't exist! Please add it to 'patterns'!");

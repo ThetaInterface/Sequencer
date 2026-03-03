@@ -14,7 +14,13 @@ public static class Processor
         if (!File.Exists(path))
             return new Exception($"{path} wasn't found!");
 
-        ProcessStartInfo startInfo = new (path) { UseShellExecute = true };
+        ProcessStartInfo startInfo = new () {
+            FileName = "cmd.exe",
+            Arguments = $"/c start \"\" \"{path}\"",
+            UseShellExecute = false,
+            CreateNoWindow = true,
+            WindowStyle = ProcessWindowStyle.Hidden
+        };
 
         try 
         {
@@ -28,7 +34,7 @@ public static class Processor
         return null;
     }
 
-    public static Exception? TryRun(Pattern pattern, string[] fileNameList)
+    public static Exception? TryRun(Pattern pattern)
     {   
         string[] flow = pattern.GetFlow();
         

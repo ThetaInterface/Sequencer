@@ -6,12 +6,17 @@ namespace Sequencer.Utils;
 
 public static class LinkManager
 {
-    private static string shortcutDir = Path.Combine(Config.ProgramPath, "shortcuts");
+    private const string FOLDER_NAME = "shortcuts";
+    private const string WHITE_LIST_FILE_NAME = "white_list";
+
+    private static readonly string shortcutDir = Path.Combine(Config.ProgramPath, FOLDER_NAME);
     private static string[] extensionWhiteList = [];
 
     public static string ShortcutDirectoryPath { get { return shortcutDir; } }
+    public static string ShortcutFolderName { get { return FOLDER_NAME; } }
+    public static string WhiteListFileName { get { return WHITE_LIST_FILE_NAME; } }
 
-    public static void Initialize(string[] extensionEntries)
+    public static void Init(string[] extensionEntries)
     {
         extensionWhiteList = (string[])extensionEntries.Clone();
 
