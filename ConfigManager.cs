@@ -12,7 +12,8 @@ public static class ConfigManager
         {EConfigOption.SeparatorSymbol, ","},
         {EConfigOption.ExitPhrase, "exit"},
         {EConfigOption.ShowExtension, "false"},
-        {EConfigOption.AutoClose, "true"}
+        {EConfigOption.AutoClose, "true"},
+        {EConfigOption.RunAsChild, "NaN"}
     };
     
     private static readonly int DEFAULT_ENTRY_COUNT = DEFAULT_CONFIGURATION.Count;
@@ -49,7 +50,7 @@ public static class ConfigManager
         return null;
     }
 
-    public static string ResolveName(EConfigOption key)
+    public static string GetEntry(EConfigOption key)
     {
         if (configData.TryGetValue(key, out string? value))
             return value;

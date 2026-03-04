@@ -14,13 +14,26 @@ public static class Processor
         if (!File.Exists(path))
             return new Exception($"{path} wasn't found!");
 
-        ProcessStartInfo startInfo = new () {
-            FileName = "cmd.exe",
-            Arguments = $"/c start \"\" \"{path}\"",
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            WindowStyle = ProcessWindowStyle.Hidden
-        };
+        ProcessStartInfo startInfo;
+
+        if (ConfigManager.GetEntry(EConfigOption.RunAsChild).Contains(Path.GetFileName(path)))
+        {
+            startInfo = new (path) 
+            {
+                UseShellExecute = true
+            };
+        }
+        else
+        {
+            startInfo = new () 
+            {
+                FileName = "cmd.exe",
+                Arguments = $"/c start \"\" \"{path}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
+        }
 
         try 
         {

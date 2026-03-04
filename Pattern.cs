@@ -34,7 +34,7 @@ public sealed class Pattern
         string output = string.Empty;
 
         foreach (var entry in entries)
-            output += entry + ConfigManager.ResolveName(EConfigOption.SeparatorSymbol);
+            output += entry + ConfigManager.GetEntry(EConfigOption.SeparatorSymbol);
         
         return output;
     }
@@ -43,7 +43,7 @@ public sealed class Pattern
     {
         List<string> flow = [];
 
-        flow.AddRange(line.Split(ConfigManager.ResolveName(EConfigOption.SeparatorSymbol), StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
+        flow.AddRange(line.Split(ConfigManager.GetEntry(EConfigOption.SeparatorSymbol), StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
 
         return flow;
     }
@@ -55,7 +55,7 @@ public sealed class Pattern
         string output = string.Empty;
 
         foreach (var entry in flow)
-            output += entry + ConfigManager.ResolveName(EConfigOption.SeparatorSymbol);
+            output += entry + ConfigManager.GetEntry(EConfigOption.SeparatorSymbol);
         
         return output;
     }

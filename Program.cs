@@ -8,6 +8,8 @@ namespace Sequencer;
 
 public static class Program
 {
+    private const bool DEBUG = false;
+
     public static void Main()
     {
         Config whiteList = new (LinkManager.WhiteListFileName);
@@ -26,11 +28,11 @@ public static class Program
 
         ConfigManager.Init(config.Read());
 
-        string separatorSymbol = ConfigManager.ResolveName(SeparatorSymbol);
-        string exitPhrase = ConfigManager.ResolveName(ExitPhrase);
+        string separatorSymbol = ConfigManager.GetEntry(SeparatorSymbol);
+        string exitPhrase = ConfigManager.GetEntry(ExitPhrase);
 
-        bool showExtensions = ConfigManager.ResolveName(ShowExtension).Contains("true");
-        bool autoClose = ConfigManager.ResolveName(AutoClose).Contains("true");
+        bool showExtensions = ConfigManager.GetEntry(ShowExtension).Contains("true");
+        bool autoClose = ConfigManager.GetEntry(AutoClose).Contains("true");
         
         string[] fileNames = LinkManager.Scan();
 
@@ -43,7 +45,8 @@ public static class Program
 
         while (true)
         {
-            Console.Clear();
+            if (!DEBUG)
+                Console.Clear();
 
             for (int i = 0; i < fileNames.Length; i++)
                 Console.WriteLine($"{i + 1}) {(showExtensions ? fileNames[i] : Path.GetFileNameWithoutExtension(fileNames[i]))}");
@@ -54,7 +57,8 @@ public static class Program
             {
                 if (userInput.Equals(exitPhrase))
                 {
-                    Console.Clear();
+                    if (!DEBUG)
+                        Console.Clear();
 
                     break;
                 }
@@ -66,7 +70,8 @@ public static class Program
 
                         if (autoClose)
                         {
-                            Console.Clear();
+                            if (!DEBUG)
+                                Console.Clear();
 
                             return;
                         }
@@ -86,7 +91,8 @@ public static class Program
                     else
                         if (autoClose)
                         {
-                            Console.Clear();
+                            if (!DEBUG)
+                                Console.Clear();
 
                             return;
                         }
@@ -104,7 +110,8 @@ public static class Program
                         else
                             if (autoClose)
                             {
-                                Console.Clear();
+                                if (!DEBUG)
+                                    Console.Clear();
 
                                 return;
                             }
@@ -118,7 +125,8 @@ public static class Program
 
     private static void PrintWarning(string text)
     {
-        Console.Clear();
+        if (!DEBUG)
+            Console.Clear();
 
         Console.WriteLine(text);
 
